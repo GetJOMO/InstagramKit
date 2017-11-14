@@ -1,2 +1,8 @@
-pod "InstagramKit", :path => '../'
-pod "InstagramKit/UICKeyChainStore", :path => '../'
+platform :ios, '9.0'
+ 
+ target 'InstagramKit-Example' do
+   use_frameworks!
+ 
+   pod 'InstagramKit', :path => '../'
+   pod 'InstagramKit/UICKeyChainStore', :path => '../'
+ end

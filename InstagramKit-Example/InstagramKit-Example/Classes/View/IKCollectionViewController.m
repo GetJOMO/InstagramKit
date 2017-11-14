@@ -74,11 +74,7 @@
     [self.collectionView reloadData];
     
     if (isSessionValid) {
-        [self requestSelfFeed];
-    }
-    else
-    {
-        [self requestPopularMedia];
+        [self requestSelfRecentMedia];
     }
 }
 
@@ -86,43 +82,27 @@
 #pragma mark - API Requests -
 
 /**
-    Calls InstagramKit's helper method to fetch Popular Instagram Media.
- */
-- (void)requestPopularMedia
-{
-    [self.instagramEngine getPopularMediaWithSuccess:^(NSArray *media, InstagramPaginationInfo *paginationInfo)
-                                                        {
-                                                            [self.mediaArray addObjectsFromArray:media];
-                                                            [self.collectionView reloadData];
-                                                        }
-                                                       failure:^(NSError *error, NSInteger statusCode) {
-                                                            NSLog(@"Load Popular Media Failed");
-                                                       }];
-}
-
-
-/**
     Calls InstagramKit's helper method to fetch Media in the authenticated user's feed.
     @discussion The self.currentPaginationInfo object is updated on each successful call
     and it's updated nextMaxId is passed as a parameter to the next paginated request.
  */
-- (void)requestSelfFeed
+- (void)requestSelfRecentMedia
 {
-    [self.instagramEngine getSelfFeedWithCount:kFetchItemsCount
-                                         maxId:self.currentPaginationInfo.nextMaxId
-                                       success:^(NSArray *media, InstagramPaginationInfo *paginationInfo) {
-                                           
-                                           self.currentPaginationInfo = paginationInfo;
-
-                                           [self.mediaArray addObjectsFromArray:media];
-                                           [self.collectionView reloadData];
-                                           
-                                           [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.mediaArray.count - 1 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
-
-                                       }
-                                       failure:^(NSError *error, NSInteger statusCode) {
-                                           NSLog(@"Request Self Feed Failed");
-                                       }];
+    [self.instagramEngine getSelfRecentMediaWithCount:kFetchItemsCount
+                                                maxId:self.currentPaginationInfo.nextMaxId
+                                              success:^(NSArray *media, InstagramPaginationInfo *paginationInfo) {
+                                                  
+                                                  self.currentPaginationInfo = paginationInfo;
+                                                  
+                                                  [self.mediaArray addObjectsFromArray:media];
+                                                  [self.collectionView reloadData];
+                                                  
+                                                  [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.mediaArray.count - 1 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+                                                  
+                                              }
+                                              failure:^(NSError *error, NSInteger statusCode) {
+                                                  NSLog(@"Request Self Recent Media Failed");
+                                              }];
 }
 
 
@@ -131,7 +111,7 @@
     @discussion The requestSelfFeed method is called with updated pagination parameters (nextMaxId).
  */
 - (IBAction)moreTapped:(id)sender {
-    [self requestSelfFeed];
+    [self requestSelfRecentMedia];
 }
 
 
